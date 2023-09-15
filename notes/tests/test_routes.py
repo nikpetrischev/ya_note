@@ -25,6 +25,10 @@ class Tests(TestCase):
         )
 
     def test_pages_availability(self):
+        """
+        Check if main/login/logout/register pages are
+        available to anonymous user.
+        """
         urls = (
             'notes:home',
             'users:login',
@@ -38,12 +42,17 @@ class Tests(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_redirects_for_anon(self):
+        """
+        Check if anon's get redirected from list of notes, note,
+        add/edit/delete pages to login screen.
+        """
         urls = (
             ('notes:list', None),
             ('notes:detail', (self.note.slug,)),
             ('notes:add', None),
             ('notes:edit', (self.note.slug,)),
             ('notes:delete', (self.note.slug,)),
+            ('notes:success', None),
         )
         login_url = settings.LOGIN_URL
         for name, args in urls:
@@ -54,6 +63,10 @@ class Tests(TestCase):
                 self.assertRedirects(response, redirect_url)
 
     def test_create_edit_delete_note(self):
+        """
+        Check that author can access theirs notes,
+        but other user cannot and recieves 404.
+        """
         users_statuses = (
             (self.author, HTTPStatus.OK),
             (self.guest, HTTPStatus.NOT_FOUND)
